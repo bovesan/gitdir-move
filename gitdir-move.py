@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import shutil
 
 usage = 'Usage: gitdir-move.py search_path1 [search_path2 ...] destination_parent_dir'
 
@@ -25,9 +26,18 @@ for arg in sys.argv[1:-1]:
 			if folderName == '.git':
 				gitFolderPath = os.path.join(root, folderName)
 				gitFolderPaths.append(gitFolderPath)
+				os.chdir(gitFolderPath)
 				# print 'Found .git folder: %s' % gitFolderPath
 				repoName = os.path.basename(os.path.dirname(gitFolderPath))
-				os.chdir(gitFolderPath)
+				try:
+					cmd = ['git', 'config', 'remote.origin.url']
+					gitRemoteUrl = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0].splitlines()[0]
+					if '/' in gitRemoteUrl:
+						repoName = os.path.basename(gitRemoteUrl)
+				except IndexError:
+					pass
+				while repoName.endswith('.git'):
+					repoName = repoName[:-4]
 				cmd = ['git', 'config', 'core.workdir', gitFolderPath]
 				os.chdir(root)
 				# print cmd,
@@ -37,10 +47,18 @@ for arg in sys.argv[1:-1]:
 					continue
 				# print cmd, '[OK]'
 				gitdirPath = os.path.join(destinationParentDir, repoName+'.git')
+				i = 0
+				while os.path.exists(gitdirPath):
+					i += 1
+					repoNameResolved = repoName + '.%i' % i
+					gitdirPath = os.path.join(destinationParentDir, repoNameResolved+'.git')
+					# print 'Cannot move %s Destination already exist: %s' % (gitFolderPath, gitdirPath)
+					# continue
 				try:
-					os.rename(gitFolderPath, gitdirPath)
+					shutil.move(gitFolderPath, gitdirPath)
 					print '%s -> %s' % (gitFolderPath, gitdirPath)
 				except OSError as e:
+					print 'Could not move %s -> %s' % (gitFolderPath, gitdirPath),
 					print e.strerror
 					continue
 				gitFileContent = 'gitdir: %s' % gitdirPath
@@ -49,7 +67,7 @@ for arg in sys.argv[1:-1]:
 				except IOError as e:
 					print '  Error: Could not write to .git file. Rolling back:'
 					try:
-						os.rename(gitdirPath, gitFolderPath)
+						shutil.move(gitdirPath, gitFolderPath)
 						print '  %s -> %s' % (gitFolderPath, gitdirPath)
 					except OSError as e:
 						print e.strerror
