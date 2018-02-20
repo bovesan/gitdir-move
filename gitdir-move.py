@@ -20,14 +20,16 @@ if not os.path.isdir(destinationParentDir):
 
 gitFolderPaths = []
 for arg in sys.argv[1:-1]:
-	for root, folderNames, fileNames in os.walk(arg):
+	for root, folderNames, fileNames in os.walk(os.path.abspath(arg)):
 		for folderName in folderNames:
 			if folderName == '.git':
-				gitFolderPath = os.path.abspath(os.path.join(root, folderName))
+				gitFolderPath = os.path.join(root, folderName)
 				gitFolderPaths.append(gitFolderPath)
 				# print 'Found .git folder: %s' % gitFolderPath
 				repoName = os.path.basename(os.path.dirname(gitFolderPath))
+				os.chdir(gitFolderPath)
 				cmd = ['git', 'config', 'core.workdir', gitFolderPath]
+				os.chdir(root)
 				# print cmd,
 				configReturnCode = subprocess.call(cmd)
 				if configReturnCode > 0:
@@ -57,4 +59,3 @@ for arg in sys.argv[1:-1]:
 if len(gitFolderPaths) == 0:
 	print 'No .git folders found in %s' % sys.argv[1:-1]
 	sys.exit(1)
-	
