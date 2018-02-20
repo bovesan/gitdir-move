@@ -39,7 +39,6 @@ for arg in sys.argv[1:-1]:
 				while repoName.endswith('.git'):
 					repoName = repoName[:-4]
 				cmd = ['git', 'config', 'core.workdir', gitFolderPath]
-				os.chdir(root)
 				# print cmd,
 				configReturnCode = subprocess.call(cmd)
 				if configReturnCode > 0:

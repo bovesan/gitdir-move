@@ -14,7 +14,6 @@ The script is roughly equivalent to running the following commands:
 
     cd [repo_folder]
     git config core.workdir [repo_folder]
-    cd ..
     mv [repo_folder] [new_git_dir_path]
     echo gitdir: [new_git_dir_path] > [repo_folder]/.git
 
