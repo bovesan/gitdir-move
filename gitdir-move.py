@@ -57,3 +57,4 @@ for arg in sys.argv[1:-1]:
 if len(gitFolderPaths) == 0:
 	print 'No .git folders found in %s' % sys.argv[1:-1]
 	sys.exit(1)
+	
