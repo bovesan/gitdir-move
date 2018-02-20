@@ -6,8 +6,8 @@ Moves all .git directories in the search path(s) to a separate location. Useful 
     gitdir-move.py search_path1 [search_path2 ...] destination_parent_dir
 
 ### Example:
-    gitdir-move.py /Users/bove/Dropbox/ /Users/bove/gitted/
-This will move all .git directories in my Dropbox to a different folder. The .git directories will be renamed to /Users/bove/gitted/[repo_name].git
+    gitdir-move.py /Users/bovesan/Dropbox/ /Users/bovesan/gitted/
+This will move all .git directories in my Dropbox to a different folder. The .git directories will be renamed to /Users/bovesan/gitted/[repo_name].git
 
 ## How does it work?
 The script is roughly equivalent to running the following commands:
