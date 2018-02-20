@@ -20,30 +20,24 @@ for arg in sys.argv[1:-1]:
 				gitFolderPath = os.path.join(root, folderName)
 				gitFolderPaths.append(gitFolderPath)
 				print 'Found .git folder: %s' % gitFolderPath
+				repoName = os.path.dirname(gitFolderPath)
+				cmd = ['git', 'config', 'core.workdir', gitFolderPath]
+				print cmd,
+				# configReturnCode = subprocess.call(cmd)
+				# if configReturnCode > 0:
+				# 	print '[FAILED]'
+				# 	continue
+				print '[OK]'
+				gitdirPath = os.path.join(destinationParentDir, repoName+'.git')
+				try:
+					# os.rename(gitFolderPath, gitdirPath)
+					print '%s -> %s' % (gitFolderPath, gitdirPath)
+				except OSError as e:
+					print e.msg
+					continue
+				gitFileContent = 'gitdir: %s' % gitdirPath
+				print '%s: "%s"' % (gitFolderPath, gitFileContent)
 
 if len(gitFolderPaths) == 0:
 	print 'No .git folders found'
 	sys.exit(1)
-
-for gitFolderPath in gitFolderPaths:
-	repoName = os.path.dirname(gitFolderPath)
-	cmd = ['git', 'config', 'core.workdir', gitFolderPath]
-	print cmd,
-	# configReturnCode = subprocess.call(cmd)
-	# if configReturnCode > 0:
-	# 	print '[FAILED]'
-	# 	continue
-	print '[OK]'
-	gitdirPath = os.path.join(destinationParentDir, repoName+'.git')
-	try:
-		# os.rename(gitFolderPath, gitdirPath)
-		print '%s -> %s' % (gitFolderPath, gitdirPath)
-	except OSError as e:
-		print e.msg
-		continue
-	gitFileContent = 'gitdir: %s' % gitdirPath
-	print '%s: "%s"' % (gitFolderPath, gitFileContent)
-	# try:
-	# 	open(gitFolderPath, 'w').write(gitFileContent)
-	# except IOError as e:
-	# 	print 'Could not write to .git file. Rolling back:'
